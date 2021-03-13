@@ -1,0 +1,10 @@
+# exclude everything except source code and makefiles
+*.swl
+*.swo
+*.swp
+*.swn
+*.swm
+*.so
+*.o
+bin/*
+tests/googletest/*
