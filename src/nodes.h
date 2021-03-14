@@ -14,10 +14,10 @@ struct Node
                     right(nullptr)
   {};
 
-  Node(char               value,
+  Node(char               val,
        unique_ptr<Node>&  l,
        unique_ptr<Node>&  r
-      ): value(value),
+      ): value(val),
          left(std::move(l)),
          right(std::move(r))
   {};

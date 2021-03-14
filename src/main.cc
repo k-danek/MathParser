@@ -4,14 +4,21 @@
 
 int main()
 {
-  std::string expr = "1+2+3*4";
 
-  Parser prsr;
 
-  bool success = prsr.growTree(expr);
+  std::string expr = "(1+2+3*4)";
+
+  Parser parser;
+
+  bool success = parser.growTree(expr);
 
   std::cout << "finished:" << success << " value:"
-            << prsr.treeRoot -> value << "\n";
+            << parser.treeRoot -> value << "\n";
 
+  std::cout << "printing out the root:";
+
+  parser.printTree(parser.treeRoot);
+
+  std::cout << "\n";
 }
 
