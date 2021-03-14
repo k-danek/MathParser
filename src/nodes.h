@@ -3,52 +3,32 @@
 
 #include <iostream>
 #include <memory>
+#include <variant>
 
 using std::unique_ptr;
 
 // Base structure that should not be instantiated.
 struct Node
 {
-  Node(){};
+  Node() = default;
+  ~Node() = default;
 
-  Node(unique_ptr<Node>&  l,
+  // char version for operator nodes 
+  Node(char               val, 
+       unique_ptr<Node>&  l,
        unique_ptr<Node>&  r
-      ): left(std::move(l)),
+      ): value(val),
+         left(std::move(l)),
          right(std::move(r))
   {};
 
-  virtual ~Node(){};
-
-  //const char value;
-  unique_ptr<Node> left;
-  unique_ptr<Node> right;
-};
-
-// Operator node, its value is char
-struct OperNode: public Node
-{
-  OperNode(char               val,
-           unique_ptr<Node>&  l,
-           unique_ptr<Node>&  r
-          ): value(val),
-             left(std::move(l)),
-             right(std::move(r))
+  // double version for leafs nodes
+  Node(double val): value(val),
+                    left(nullptr),
+                    right(nullptr)
   {};
 
-  const char value;
-  unique_ptr<Node> left;
-  unique_ptr<Node> right;
-};
-
-// Operator node, its value is char
-struct LeafNode: public Node
-{
-  LeafNode(char value): value(value),
-                        left(nullptr),
-                        right(nullptr)
-  {};
-
-  const double value;
+  const std::variant<char,double> value;
   unique_ptr<Node> left;
   unique_ptr<Node> right;
 };

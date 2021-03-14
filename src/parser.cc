@@ -21,15 +21,12 @@ bool Parser::growTree(std::string& expr)
 
     if(isdigit(*it))
     {
-      //nodeStack.push(std::make_unique<Node>(*it));
+      
+      // Beware! This function shifts the iterator to the first
+      // non-number character.
+      double leafValue = _getNumber(expr, it);
 
-      //std::cout << "**it was a digit, #nodes=" << nodeStack.size()
-      //          << " node on top value= " << nodeStack.top()->value << "\n";
-
-      nodeVec.push_back(std::make_unique<Node>(*it));
-
-      std::cout << "**it was a digit, #nodes=" << nodeVec.size()
-                << " node on top value= " << nodeVec.back()->value << "\n";
+      nodeVec.push_back(std::make_unique<Node>(leafValue));
 
       // Patch the case when expression ends with a number
       std::string::iterator itp1 = it+1;
@@ -97,14 +94,14 @@ bool Parser::growTree(std::string& expr)
           std::cout << "** it was an operation, #nodes=" << nodeVec.size()
                     << ", #chars=" << valueStack.size();
          
-          if(nodeVec.back())
-          {
-            std::cout << ", current root value=" << nodeVec.back()->value << "\n";
-          }
-          else
-          {
-            std::cout << ", current root value=NULL" << "\n";
-          }
+          //if(nodeVec.back())
+          //{
+          //  std::cout << ", current root value=" << nodeVec.back()->value << "\n";
+          //}
+          //else
+          //{
+          //  std::cout << ", current root value=NULL" << "\n";
+          //}
 
           std::cout << "***";  
           printChars();
@@ -153,59 +150,38 @@ bool Parser::growTree(std::string& expr)
   std::cout << "** finished with #nodes=" << nodeVec.size()
             << ", #chars=" << valueStack.size();
            
-  if(nodeVec.back())
-  {
-    std::cout << ", current root value=" << nodeVec.back()->value << "\n";
-  }  
-  else
-  {
-    std::cout << "\n" << "could not get the value on top\n";
-  }
+  //if(nodeVec.back())
+  //{
+  //  std::cout << ", current root value=" << nodeVec.back()->value << "\n";
+  //}  
+  //else
+  //{
+  //  std::cout << "\n" << "could not get the value on top\n";
+  //}
 
   treeRoot = std::move(nodeVec.back());
            
   return true;
 }
 
-void Parser::printTree(const unique_ptr<OperNode> root) const
+void Parser::printTree(const unique_ptr<Node>& root) const
 {
-
   if (root) 
   {
-      std::cout << root->value;
+      // value can be either char or double
+      if(auto ptr = std::get_if<char>(&root->value))
+      {
+        std::cout << *ptr;
+      }
+      else if(auto ptr = std::get_if<double>(&root->value))
+      {
+        std::cout << *ptr;
+      }
+      std::cout << " ";  
       printTree(root->left);
       printTree(root->right);
   }
-
 }
-
-void Parser::printTree(const unique_ptr<LeafNode> root) const
-{
-
-  if (root) 
-  {
-      std::cout << root->value;
-      printTree(root->left);
-      printTree(root->right);
-  }
-
-}
-
-//void Parser::printTree(const unique_ptr<Node> root) const
-//{
-//
-//  if (root) 
-//  {
-//      std::cout << root->value;
-//      printTree(root->left);
-//      printTree(root->right);
-//      //std::cout << root->value;
-//  }
-//
-//}
-
-
-
 
 void Parser::printNodes() const
 {
@@ -216,7 +192,17 @@ void Parser::printNodes() const
   {
     if(node)
     {
-      std::cout << node->value << ", ";
+      // value can be either char or double
+      if(auto ptr = std::get_if<char>(&node->value))
+      {
+        std::cout << *ptr;
+      }
+      else if(auto ptr = std::get_if<double>(&node->value))
+      {
+        std::cout << *ptr;
+      }  
+
+      std::cout << ", ";
     }    
     else
     {
@@ -226,7 +212,6 @@ void Parser::printNodes() const
   
   std::cout << "\n";
 }
-
 
 void Parser::printChars() const
 {
@@ -253,4 +238,18 @@ char Parser::_getPriority(char c)
     return 0;
   }
 }
+
+double Parser::_getNumber(const std::string&     exprString,    
+                          std::string::iterator& it) const
+{
+  //std::string numStr = std::string(it, exprString.end());
+  std::string numStr = exprString.substr(it-exprString.begin());
+  std::string::size_type endOfNumber;
+  double num = std::stod(numStr, &endOfNumber);
+
+  it = it + endOfNumber - 1;
+
+  return num;
+}
+
 

@@ -5,19 +5,18 @@
 int main()
 {
 
-
-  std::string expr = "1+2+3*4+2";
+  std::string expr = "1.005+2+30.7*44.00+2";
 
   Parser parser;
 
   bool success = parser.growTree(expr);
 
-  std::cout << "finished:" << success << " value:"
-            << parser.treeRoot -> value << "\n";
-
   std::cout << "printing out the root:";
 
   parser.printTree(parser.treeRoot);
+
+  std::cout << "finished:" << success << " value:"
+            << std::get<char>(parser.treeRoot -> value) << "\n";
 
   std::cout << "\n";
 }
