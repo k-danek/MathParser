@@ -28,6 +28,9 @@ class Parser
     void printNodes() const;
     void printChars() const;
 
+    // evaluates the expression tree into a single number.
+    double evaluateExpr(const unique_ptr<Node>& root) const;
+
   private:
     unique_ptr<Node> _tempLeft  = nullptr;
     unique_ptr<Node> _tempRight = nullptr;
@@ -52,6 +55,14 @@ class Parser
 
     // Gets a priority of associativity for a char
     char _getPriority(char c);
+
+    // A function with a dialog to fill numbers for algebraic terms.
+    // The assumption is that variables are alphabetical chars.
+    // Changes the entered string in the process.
+    // Includes a dialog.
+    void _fillUnknowns(std::string& exprString,
+                       char         c);
+
 };
 
 #endif

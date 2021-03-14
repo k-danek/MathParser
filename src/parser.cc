@@ -4,21 +4,32 @@ bool Parser::growTree(std::string& expr)
 {
   std::cout << "Started growing a tree from: " << expr << "\n";
 
+  // Replace variables with values
+  // TODO: use just one loop!
+  for(auto c: expr)
+  {
+    if(isalpha(c))
+    {
+      _fillUnknowns(expr, c);
+    }  
+  }
+
   for(std::string::iterator it = expr.begin(); it < expr.end(); ++it)
   {
 
     std::cout << "*read char:" << *it << "\n";
 
-    // Dirty hack how to handle missing closing bracket
-    //if(it == expr.end())
-    //{
-    //  *it = ')';
-    //  if(valueStack.empty())
-    //  {
-    //    valueStack.push('(');
-    //  } 
-    //}
 
+    //if(isalpha(*it)) // algebraic variable
+    //{
+    //  // Beware! This functions changes the length of the string.       
+    //  _fillUnknowns(expr, it);
+    //  
+    //  // Decrementing the iterator so in the next loop the value will be read.
+    //  //it--;
+    //  // Skipping the rest of this cycle.
+    //  continue;
+    //}
     if(isdigit(*it))
     {
       
@@ -94,15 +105,6 @@ bool Parser::growTree(std::string& expr)
           std::cout << "** it was an operation, #nodes=" << nodeVec.size()
                     << ", #chars=" << valueStack.size();
          
-          //if(nodeVec.back())
-          //{
-          //  std::cout << ", current root value=" << nodeVec.back()->value << "\n";
-          //}
-          //else
-          //{
-          //  std::cout << ", current root value=NULL" << "\n";
-          //}
-
           std::cout << "***";  
           printChars();
           std::cout << "***";  
@@ -252,4 +254,78 @@ double Parser::_getNumber(const std::string&     exprString,
   return num;
 }
 
+double Parser::evaluateExpr(const unique_ptr<Node>& root) const
+{
+  if(root) 
+  {
+      // value can be either char or double
+      if(auto valPtr = std::get_if<char>(&root->value))
+      {
+        switch(*valPtr)
+        {
+          case '+':
+            return evaluateExpr(root->left)+evaluateExpr(root->right);
+            break;
+          case '-':
+            return evaluateExpr(root->left)-evaluateExpr(root->right);
+            break;
+          case '*':
+            return evaluateExpr(root->left)*evaluateExpr(root->right);
+            break;
+          case '/':
+            return evaluateExpr(root->left)/evaluateExpr(root->right);
+            break;
+        }
+      }
+      else if(auto valPtr = std::get_if<double>(&root->value))
+      {
+        return *valPtr;
+      }
+  }
+  else
+  {
+    std::cout << "WARNING: Root not found!\n";
+    return 0.0;
+  }
+}
+
+void Parser::_fillUnknowns(std::string& exprString,
+                           char         c)
+{
+  double value;
+  std::string valueStr;
+
+  std::cout << "\nUnknown variable found: " << c << "\n"
+            << "Please fill in its numerical value:";
+
+  std::cin >> valueStr;
+
+  // User is free in input rubbish.
+  try
+  {
+   value = std::stod(valueStr);
+  }
+  catch(const char* msg)
+  {
+    std::cout << msg << "\nPlease try again\n";
+    _fillUnknowns(exprString, c);
+  }
+
+  // And going back to string for replacement.
+  // Lazy formatting for a good measure.
+  valueStr = std::to_string(value);
+
+  std::cout << "Setting " << c << " = " << valueStr << "\n";   
+
+  // TODO: rewrite so that position of the first instance would be known.
+  std::string::size_type pos = 0; 
+  // Replacing all the instances of the variable.
+  while( (pos = exprString.find(c, pos)) != std::string::npos)
+  {
+    exprString.replace(pos, 1, valueStr);
+    pos += valueStr.size();
+  }
+
+  std::cout << "The expr string is now: " << exprString << "\n";
+}
 

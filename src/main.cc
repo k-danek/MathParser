@@ -5,7 +5,7 @@
 int main()
 {
 
-  std::string expr = "1.005+2+30.7*44.00+2";
+  std::string expr = "a+1.005+2+30.7*44.00+2+a";
 
   Parser parser;
 
@@ -16,7 +16,8 @@ int main()
   parser.printTree(parser.treeRoot);
 
   std::cout << "finished:" << success << " value:"
-            << std::get<char>(parser.treeRoot -> value) << "\n";
+            << std::get<char>(parser.treeRoot -> value) << "\n"
+            << "calculation result: " << parser.evaluateExpr(parser.treeRoot) << "\n";
 
   std::cout << "\n";
 }
