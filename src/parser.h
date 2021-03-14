@@ -21,15 +21,17 @@ class Parser
     bool growTree(std::string& exprString);
     //unique_ptr<Node> growTree(std::string& exprString);
 
-    unique_ptr<Node> treeRoot;
+    unique_ptr<OperNode> treeRoot;
 
-    void printTree(const unique_ptr<Node>& root) const;
+    //void printTree(const unique_ptr<Node>& root) const;
+    void printTree(const unique_ptr<OperNode>& root) const;
+    void printTree(const unique_ptr<LeafNode>& root) const;
+
     void printNodes() const;
     void printChars() const;
 
 
   private:
-    //ExprTree _exprTree;
     unique_ptr<Node> _tempLeft  = nullptr;
     unique_ptr<Node> _tempRight = nullptr;
     std::stack<unique_ptr<Node>> nodeStack;

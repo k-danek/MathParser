@@ -44,8 +44,8 @@ bool Parser::growTree(std::string& expr)
           nodeVec.pop_back();
 
           unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
-                                                      _tempLeft,
-                                                      _tempRight);
+                                                          _tempLeft,
+                                                          _tempRight);
           valueStack.pop();
           nodeVec.push_back(std::move(t));
         }
@@ -167,7 +167,7 @@ bool Parser::growTree(std::string& expr)
   return true;
 }
 
-void Parser::printTree(const unique_ptr<Node>& root) const
+void Parser::printTree(const unique_ptr<OperNode> root) const
 {
 
   if (root) 
@@ -175,10 +175,37 @@ void Parser::printTree(const unique_ptr<Node>& root) const
       std::cout << root->value;
       printTree(root->left);
       printTree(root->right);
-      //std::cout << root->value;
   }
 
 }
+
+void Parser::printTree(const unique_ptr<LeafNode> root) const
+{
+
+  if (root) 
+  {
+      std::cout << root->value;
+      printTree(root->left);
+      printTree(root->right);
+  }
+
+}
+
+//void Parser::printTree(const unique_ptr<Node> root) const
+//{
+//
+//  if (root) 
+//  {
+//      std::cout << root->value;
+//      printTree(root->left);
+//      printTree(root->right);
+//      //std::cout << root->value;
+//  }
+//
+//}
+
+
+
 
 void Parser::printNodes() const
 {
