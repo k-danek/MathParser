@@ -52,6 +52,7 @@ class Parser
     double _getNumber(std::string&           exprString,    
                       std::string::iterator& it) const;
 
+    // Gets a priority of associativity for a char
     char _getPriority(char c);
 };
 

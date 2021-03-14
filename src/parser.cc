@@ -2,8 +2,6 @@
 
 bool Parser::growTree(std::string& expr)
 {
-  //char priority = 0;
-
   std::cout << "Started growing a tree from: " << expr << "\n";
 
   for(std::string::iterator it = expr.begin(); it < expr.end(); ++it)
@@ -11,16 +9,18 @@ bool Parser::growTree(std::string& expr)
 
     std::cout << "*read char:" << *it << "\n";
 
+    // Dirty hack how to handle missing closing bracket
+    //if(it == expr.end())
+    //{
+    //  *it = ')';
+    //  if(valueStack.empty())
+    //  {
+    //    valueStack.push('(');
+    //  } 
+    //}
+
     if(isdigit(*it))
     {
-      //_numbers.push_back(_getNumber(expr, it));
-
-      //if(it >= expr.end())
-      //{
-      //  // The number reaches up till the end of the string.
-      //  return true;
-      //}
-
       //nodeStack.push(std::make_unique<Node>(*it));
 
       //std::cout << "**it was a digit, #nodes=" << nodeStack.size()
@@ -31,19 +31,34 @@ bool Parser::growTree(std::string& expr)
       std::cout << "**it was a digit, #nodes=" << nodeVec.size()
                 << " node on top value= " << nodeVec.back()->value << "\n";
 
+      // Patch the case when expression ends with a number
+      std::string::iterator itp1 = it+1;
+      if(itp1 == expr.end())
+      {
+        while(!valueStack.empty())
+        {
+          _tempRight = std::move(nodeVec.back());
+          nodeVec.pop_back();               
+          
+          _tempLeft = std::move(nodeVec.back());
+          nodeVec.pop_back();
+
+          unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
+                                                      _tempLeft,
+                                                      _tempRight);
+          valueStack.pop();
+          nodeVec.push_back(std::move(t));
+        }
+      }
     }
     else if(*it == '(')
     {
       valueStack.push('(');
       std::cout << "**it was '(', #chars=" << valueStack.size() << "\n";
-
     }
     else
     {
-      auto search = _priority.find(*it);
-      if(search != _priority.end())
-      {
-        if(*it != ')')
+        //if(*it != ')')
         {
 
           std::cout << "**Before while:\n";
@@ -52,41 +67,11 @@ bool Parser::growTree(std::string& expr)
           std::cout << "***";  
           printNodes();
 
-          //priority = _getPriority(valueStack.top());       
-          //priority = 0;
+          char priority = _getPriority(*it);
 
           while (!valueStack.empty() && valueStack.top() != '('
-                 && _getPriority(valueStack.top()) >= search->second)
+                 && _getPriority(valueStack.top()) >= priority)
           {
- 
-             // // Get and remove the top element
-             // // from the character stack
-             // t = newNode(stC.top());
-             // stC.pop();
- 
-             // // Get and remove the top element
-             // // from the node stack
-             // t1 = stN.top();
-             // stN.pop();
- 
-             // // Get and remove the currently top
-             // // element from the node stack
-             // t2 = stN.top();
-             // stN.pop();
- 
-             // // Update the tree
-             // t->left = t2;
-             // t->right = t1;
- 
-             // // Push the node to the node stack
-             // stN.push(t);
-            
-             //_tempRight = std::move(nodeStack.top());
-             //nodeStack.pop();               
-             //
-             //_tempLeft = std::move(nodeStack.top());
-             //nodeStack.pop();
-             
              _tempRight = std::move(nodeVec.back());
              nodeVec.pop_back();               
              
@@ -96,18 +81,19 @@ bool Parser::growTree(std::string& expr)
              unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
                                                          _tempLeft,
                                                          _tempRight);
-             
              valueStack.pop();
              nodeVec.push_back(std::move(t));
-          
-             std::cout << "|While loop ran|\n";
           }
-          valueStack.push(*it);  
+          
+          if(*it == ')')
+          {
+            valueStack.pop();
+          }
+          else
+          {
+            valueStack.push(*it);  
+          }
 
-          //std::cout << "** it was an operation, #nodes=" << nodeStack.size()
-          //          << ", #chars=" << valueStack.size() << ", current root value="
-          //          << nodeStack.top()->value << "\n";
- 
           std::cout << "** it was an operation, #nodes=" << nodeVec.size()
                     << ", #chars=" << valueStack.size();
          
@@ -126,57 +112,41 @@ bool Parser::growTree(std::string& expr)
           printNodes();
 
         }
-        else if(*it == ')')
-        {
-           while (!valueStack.empty() && valueStack.top() != '(') 
-           {
-               //t = newNode(stC.top());
-               //stC.pop();
-               //t1 = stN.top();
-               //stN.pop();
-               //t2 = stN.top();
-               //stN.pop();
-               //t->left = t2;
-               //t->right = t1;
-               // _tempRight = std::move(nodeStack.top());
-               //nodeStack.pop();               
-               //
-               //_tempLeft = std::move(nodeStack.top());
-               //nodeStack.pop();
-                _tempRight = std::move(nodeVec.back());
-               nodeVec.pop_back();               
-               
-               _tempLeft = std::move(nodeVec.back());
-               nodeVec.pop_back();
+        //else if(*it == ')')
+        //{
+        //   while (!valueStack.empty() && valueStack.top() != '(') 
+        //   {
 
-               unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
-                                                           _tempLeft,
-                                                           _tempRight);
-               valueStack.pop();
-               nodeVec.push_back(std::move(t));
-            
-           }
-           valueStack.pop();
-           //std::cout << "** it was ')', #nodes=" << nodeStack.size()
-           //          << ", #chars=" << valueStack.size() << ", current root value="
-           //          << nodeStack.top()->value << "\n";
+        //       _tempRight = std::move(nodeVec.back());
+        //       nodeVec.pop_back();               
+        //       
+        //       _tempLeft = std::move(nodeVec.back());
+        //       nodeVec.pop_back();
 
-           std::cout << "** it was ')', #nodes=" << nodeVec.size()
-                     << ", #chars=" << valueStack.size() << ", current root value="
-                     << nodeVec.back()->value << "\n";
+        //       unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
+        //                                                   _tempLeft,
+        //                                                   _tempRight);
+        //       valueStack.pop();
+        //       nodeVec.push_back(std::move(t));
+        //    
+        //   }
+        //   valueStack.pop();
 
-           std::cout << "***";  
-           printChars();
-           std::cout << "***";  
-           printNodes();
+        //   std::cout << "** it was ')', #nodes=" << nodeVec.size()
+        //             << ", #chars=" << valueStack.size() << ", current root value="
+        //             << nodeVec.back()->value << "\n";
+
+        //   std::cout << "***";  
+        //   printChars();
+        //   std::cout << "***";  
+        //   printNodes();
  
-        }
-        else
-        {
-          std::cout << "Some weird shit has happened \n";
-          return false;
-        }
-      }
+        //}
+        //else
+        //{
+        //  std::cout << "Some weird shit has happened \n";
+        //  return false;
+        //}
     }
   }
 

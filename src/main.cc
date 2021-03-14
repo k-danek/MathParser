@@ -6,7 +6,7 @@ int main()
 {
 
 
-  std::string expr = "(1+2+3*4)";
+  std::string expr = "1+2+3*4+2";
 
   Parser parser;
 
