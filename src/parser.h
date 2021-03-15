@@ -17,9 +17,10 @@ class Parser
 
     Parser() = default;
     ~Parser() = default;
-    
+ 
+    // Main method that constructs the tree from the 
+    // algebraic expression.
     bool growTree(std::string& exprString);
-    //unique_ptr<Node> growTree(std::string& exprString);
 
     unique_ptr<Node> treeRoot;
 

@@ -4,8 +4,14 @@ bool Parser::growTree(std::string& expr)
 {
   std::cout << "Started growing a tree from: " << expr << "\n";
 
-  // Replace variables with values
-  // TODO: use just one loop!
+  // Make sure the vectors, stacks and root are clean.
+  nodeVec.clear();
+  valueStack=std::stack<char>();
+  treeRoot = nullptr;
+  
+  // Replaces variables with values
+  // TODO: includes a bug while it does not replace all the instances
+  //       of the variable.
   for(auto c: expr)
   {
     if(isalpha(c))

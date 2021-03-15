@@ -11,4 +11,5 @@ cmake_install.cmake
 Makefile
 CMakeFiles/*
 bin/*
-tests/googletest/*
+lib/*
+tst/googletest/*

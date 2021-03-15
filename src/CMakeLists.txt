@@ -26,3 +26,8 @@ add_executable(${BINARY} ${SOURCE_FILES})
 
 target_include_directories(${BINARY} PUBLIC ${SRC})
 
+# Adding the library
+add_library(parser SHARED ${SOURCE_FILES})
+
+target_include_directories(parser PUBLIC ${SRC})
+
