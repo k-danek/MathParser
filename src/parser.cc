@@ -23,7 +23,8 @@ bool Parser::growTree(std::string& expr)
   for(std::string::iterator it = expr.begin(); it < expr.end(); ++it)
   {
 
-    std::cout << "*read char:" << *it << "\n";
+    // Debugging output
+    //std::cout << "*read char:" << *it << "\n";
 
     if(isdigit(*it))
     {
@@ -62,13 +63,6 @@ bool Parser::growTree(std::string& expr)
     else
     {
       {
-
-        std::cout << "**Before while:\n";
-        std::cout << "***";  
-        printChars();
-        std::cout << "***";  
-        printNodes();
-
         char priority = _getPriority(*it);
 
         while (!valueStack.empty() && valueStack.top() != '('
@@ -96,13 +90,14 @@ bool Parser::growTree(std::string& expr)
           valueStack.push(*it);  
         }
 
-        std::cout << "** it was an operation, #nodes=" << nodeVec.size()
-                  << ", #chars=" << valueStack.size();
+        // Debugging outputs
+        //std::cout << "** it was an operation, #nodes=" << nodeVec.size()
+        //          << ", #chars=" << valueStack.size();
        
-        std::cout << "***";  
-        printChars();
-        std::cout << "***";  
-        printNodes();
+        //std::cout << "***";  
+        //printChars();
+        //std::cout << "***";  
+        //printNodes();
 
       }
     }

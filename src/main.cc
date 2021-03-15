@@ -4,8 +4,10 @@
 
 int main()
 {
+  std::string expr;
 
-  std::string expr = "a+1.005+2+30.7*44.00+2+a";
+  std::cout << "Please enter a string with a mathematical expression: ";
+  std::cin >> expr;
 
   Parser parser;
 
