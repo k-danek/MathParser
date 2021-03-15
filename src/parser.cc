@@ -19,17 +19,6 @@ bool Parser::growTree(std::string& expr)
 
     std::cout << "*read char:" << *it << "\n";
 
-
-    //if(isalpha(*it)) // algebraic variable
-    //{
-    //  // Beware! This functions changes the length of the string.       
-    //  _fillUnknowns(expr, it);
-    //  
-    //  // Decrementing the iterator so in the next loop the value will be read.
-    //  //it--;
-    //  // Skipping the rest of this cycle.
-    //  continue;
-    //}
     if(isdigit(*it))
     {
       
@@ -66,86 +55,50 @@ bool Parser::growTree(std::string& expr)
     }
     else
     {
-        //if(*it != ')')
+      {
+
+        std::cout << "**Before while:\n";
+        std::cout << "***";  
+        printChars();
+        std::cout << "***";  
+        printNodes();
+
+        char priority = _getPriority(*it);
+
+        while (!valueStack.empty() && valueStack.top() != '('
+               && _getPriority(valueStack.top()) >= priority)
         {
+           _tempRight = std::move(nodeVec.back());
+           nodeVec.pop_back();               
+           
+           _tempLeft = std::move(nodeVec.back());
+           nodeVec.pop_back();
 
-          std::cout << "**Before while:\n";
-          std::cout << "***";  
-          printChars();
-          std::cout << "***";  
-          printNodes();
-
-          char priority = _getPriority(*it);
-
-          while (!valueStack.empty() && valueStack.top() != '('
-                 && _getPriority(valueStack.top()) >= priority)
-          {
-             _tempRight = std::move(nodeVec.back());
-             nodeVec.pop_back();               
-             
-             _tempLeft = std::move(nodeVec.back());
-             nodeVec.pop_back();
-
-             unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
-                                                         _tempLeft,
-                                                         _tempRight);
-             valueStack.pop();
-             nodeVec.push_back(std::move(t));
-          }
-          
-          if(*it == ')')
-          {
-            valueStack.pop();
-          }
-          else
-          {
-            valueStack.push(*it);  
-          }
-
-          std::cout << "** it was an operation, #nodes=" << nodeVec.size()
-                    << ", #chars=" << valueStack.size();
-         
-          std::cout << "***";  
-          printChars();
-          std::cout << "***";  
-          printNodes();
-
+           unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
+                                                       _tempLeft,
+                                                       _tempRight);
+           valueStack.pop();
+           nodeVec.push_back(std::move(t));
         }
-        //else if(*it == ')')
-        //{
-        //   while (!valueStack.empty() && valueStack.top() != '(') 
-        //   {
+        
+        if(*it == ')')
+        {
+          valueStack.pop();
+        }
+        else
+        {
+          valueStack.push(*it);  
+        }
 
-        //       _tempRight = std::move(nodeVec.back());
-        //       nodeVec.pop_back();               
-        //       
-        //       _tempLeft = std::move(nodeVec.back());
-        //       nodeVec.pop_back();
+        std::cout << "** it was an operation, #nodes=" << nodeVec.size()
+                  << ", #chars=" << valueStack.size();
+       
+        std::cout << "***";  
+        printChars();
+        std::cout << "***";  
+        printNodes();
 
-        //       unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
-        //                                                   _tempLeft,
-        //                                                   _tempRight);
-        //       valueStack.pop();
-        //       nodeVec.push_back(std::move(t));
-        //    
-        //   }
-        //   valueStack.pop();
-
-        //   std::cout << "** it was ')', #nodes=" << nodeVec.size()
-        //             << ", #chars=" << valueStack.size() << ", current root value="
-        //             << nodeVec.back()->value << "\n";
-
-        //   std::cout << "***";  
-        //   printChars();
-        //   std::cout << "***";  
-        //   printNodes();
- 
-        //}
-        //else
-        //{
-        //  std::cout << "Some weird shit has happened \n";
-        //  return false;
-        //}
+      }
     }
   }
 
