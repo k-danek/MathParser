@@ -4,7 +4,7 @@
 #include<nodes.h>
 
 #include<string>
-#include<ctype.h>
+#include<cctype>
 #include<stack>
 #include<vector>
 #include<unordered_map>
@@ -49,6 +49,9 @@ class Parser
       {'*',2}
     };
 
+    // Variable values are stored in this map.
+    std::unordered_map<char,double> _variableMap;
+
     // Iterates through a string to get a number out, also modifies the iterator
     // to the first non-numeric character.
     double _getNumber(const std::string&     exprString,    
@@ -64,6 +67,9 @@ class Parser
     void _fillUnknowns(std::string& exprString,
                        char         c);
 
+    // Prompts user to fill a value for a variable.
+    double _getVariable(const std::string& exprString,
+                        char               c);
 };
 
 #endif

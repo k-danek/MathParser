@@ -12,13 +12,13 @@ bool Parser::growTree(std::string& expr)
   // Replaces variables with values
   // TODO: includes a bug while it does not replace all the instances
   //       of the variable.
-  for(auto c: expr)
-  {
-    if(isalpha(c))
-    {
-      _fillUnknowns(expr, c);
-    }  
-  }
+  //for(auto c: expr)
+  //{
+  //  if(isalpha(c))
+  //  {
+  //    _fillUnknowns(expr, c);
+  //  }  
+  //}
 
   for(std::string::iterator it = expr.begin(); it < expr.end(); ++it)
   {
@@ -26,16 +26,32 @@ bool Parser::growTree(std::string& expr)
     // Debugging output
     //std::cout << "*read char:" << *it << "\n";
 
-    if(isdigit(*it))
+    if(isalnum(*it))
     {
+      double value;
+      if(isalpha(*it))
+      {
+        auto search = _variableMap.find(*it); 
+        if(search != _variableMap.end())
+        {
+          value = search -> second;
+        }
+        else
+        {
+          value = _getVariable(expr, *it);
+          _variableMap[*it] = value;
+        }
+      }
+      else // Assumes digit if not alpha
+      {
+        value = _getNumber(expr, it);
+      }
       
-      // Beware! This function shifts the iterator to the first
-      // non-number character.
-      double leafValue = _getNumber(expr, it);
-
-      nodeVec.push_back(std::make_unique<Node>(leafValue));
+      nodeVec.push_back(std::make_unique<Node>(value));
 
       // Patch the case when expression ends with a number
+      // TODO: Put it behind the loop rather than checking on every
+      //       alphanumeric char.
       std::string::iterator itp1 = it+1;
       if(itp1 == expr.end())
       {
@@ -55,6 +71,35 @@ bool Parser::growTree(std::string& expr)
         }
       }
     }
+    //if(isdigit(*it))
+    //{
+    //  
+    //  // Beware! This function shifts the iterator to the first
+    //  // non-number character.
+    //  double leafValue = _getNumber(expr, it);
+
+    //  nodeVec.push_back(std::make_unique<Node>(leafValue));
+
+    //  // Patch the case when expression ends with a number
+    //  std::string::iterator itp1 = it+1;
+    //  if(itp1 == expr.end())
+    //  {
+    //    while(!valueStack.empty())
+    //    {
+    //      _tempRight = std::move(nodeVec.back());
+    //      nodeVec.pop_back();               
+    //      
+    //      _tempLeft = std::move(nodeVec.back());
+    //      nodeVec.pop_back();
+
+    //      unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
+    //                                                      _tempLeft,
+    //                                                      _tempRight);
+    //      valueStack.pop();
+    //      nodeVec.push_back(std::move(t));
+    //    }
+    //  }
+    //}
     else if(*it == '(')
     {
       valueStack.push('(');
@@ -281,5 +326,30 @@ void Parser::_fillUnknowns(std::string& exprString,
   }
 
   std::cout << "The expr string is now: " << exprString << "\n";
+}
+
+double Parser::_getVariable(const std::string& exprString,
+                            char               c)
+{
+  double value;
+  std::string valueStr;
+
+  std::cout << "\nUnknown variable found: " << c << "\n"
+            << "Please fill in its numerical value:";
+
+  std::cin >> valueStr;
+
+  // User is free in input rubbish.
+  try
+  {
+   value = std::stod(valueStr);
+  }
+  catch(const char* msg)
+  {
+    std::cout << msg << "\nPlease try again\n";
+    return _getVariable(exprString, c);
+  }
+
+  return value;
 }
 
