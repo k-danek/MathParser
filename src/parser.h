@@ -60,13 +60,6 @@ class Parser
     // Gets a priority of associativity for a char
     char _getPriority(char c);
 
-    // A function with a dialog to fill numbers for algebraic terms.
-    // The assumption is that variables are alphabetical chars.
-    // Changes the entered string in the process.
-    // Includes a dialog.
-    void _fillUnknowns(std::string& exprString,
-                       char         c);
-
     // Prompts user to fill a value for a variable.
     double _getVariable(const std::string& exprString,
                         char               c);

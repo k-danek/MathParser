@@ -9,17 +9,6 @@ bool Parser::growTree(std::string& expr)
   valueStack=std::stack<char>();
   treeRoot = nullptr;
   
-  // Replaces variables with values
-  // TODO: includes a bug while it does not replace all the instances
-  //       of the variable.
-  //for(auto c: expr)
-  //{
-  //  if(isalpha(c))
-  //  {
-  //    _fillUnknowns(expr, c);
-  //  }  
-  //}
-
   for(std::string::iterator it = expr.begin(); it < expr.end(); ++it)
   {
 
@@ -71,35 +60,6 @@ bool Parser::growTree(std::string& expr)
         }
       }
     }
-    //if(isdigit(*it))
-    //{
-    //  
-    //  // Beware! This function shifts the iterator to the first
-    //  // non-number character.
-    //  double leafValue = _getNumber(expr, it);
-
-    //  nodeVec.push_back(std::make_unique<Node>(leafValue));
-
-    //  // Patch the case when expression ends with a number
-    //  std::string::iterator itp1 = it+1;
-    //  if(itp1 == expr.end())
-    //  {
-    //    while(!valueStack.empty())
-    //    {
-    //      _tempRight = std::move(nodeVec.back());
-    //      nodeVec.pop_back();               
-    //      
-    //      _tempLeft = std::move(nodeVec.back());
-    //      nodeVec.pop_back();
-
-    //      unique_ptr<Node> t = std::make_unique<Node>(valueStack.top(),
-    //                                                      _tempLeft,
-    //                                                      _tempRight);
-    //      valueStack.pop();
-    //      nodeVec.push_back(std::move(t));
-    //    }
-    //  }
-    //}
     else if(*it == '(')
     {
       valueStack.push('(');
@@ -286,46 +246,6 @@ double Parser::evaluateExpr(const unique_ptr<Node>& root) const
     std::cout << "WARNING: Root not found!\n";
     return 0.0;
   }
-}
-
-void Parser::_fillUnknowns(std::string& exprString,
-                           char         c)
-{
-  double value;
-  std::string valueStr;
-
-  std::cout << "\nUnknown variable found: " << c << "\n"
-            << "Please fill in its numerical value:";
-
-  std::cin >> valueStr;
-
-  // User is free in input rubbish.
-  try
-  {
-   value = std::stod(valueStr);
-  }
-  catch(const char* msg)
-  {
-    std::cout << msg << "\nPlease try again\n";
-    _fillUnknowns(exprString, c);
-  }
-
-  // And going back to string for replacement.
-  // Lazy formatting for a good measure.
-  valueStr = std::to_string(value);
-
-  std::cout << "Setting " << c << " = " << valueStr << "\n";   
-
-  // TODO: rewrite so that position of the first instance would be known.
-  std::string::size_type pos = 0; 
-  // Replacing all the instances of the variable.
-  while( (pos = exprString.find(c, pos)) != std::string::npos)
-  {
-    exprString.replace(pos, 1, valueStr);
-    pos += valueStr.size();
-  }
-
-  std::cout << "The expr string is now: " << exprString << "\n";
 }
 
 double Parser::_getVariable(const std::string& exprString,
